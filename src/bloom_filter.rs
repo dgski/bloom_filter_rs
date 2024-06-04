@@ -3,45 +3,47 @@ pub mod bloom_filter {
     use std::hash::{DefaultHasher, Hash, Hasher};
 
 
-struct BloomFilter {
+pub struct BloomFilter {
     buckets: bitset::bitset::BitSet
 }
 
 impl BloomFilter {
 
     fn hash(key: &str) -> u64 {
-        let mut hasher = DefaultHasher::new();
+        let mut hasher: DefaultHasher = DefaultHasher::new();
         key.hash(&mut hasher);
         hasher.finish()
     }
 
-    fn get_segment_hash(full_hash: u64, index: u64) -> u16 {
-        (full_hash >> (16 * index)) as u16
+    fn get_segment_hash(full_hash: u64, index: u64) -> usize {
+        ((full_hash >> (16 * index)) as u16) as usize
     }
 
-    fn new() -> BloomFilter {
+    pub fn new() -> BloomFilter {
         BloomFilter {
             buckets: bitset::bitset::BitSet::new(u16::MAX as usize)
         }
     }
 
-    fn add(&mut self, key: &str) {
+    pub fn add(&mut self, key: &str) {
         let full_hash = BloomFilter::hash(key);
-        self.buckets.set(BloomFilter::get_segment_hash(full_hash, 0) as usize);
-        self.buckets.set(BloomFilter::get_segment_hash(full_hash, 1) as usize);
-        self.buckets.set(BloomFilter::get_segment_hash(full_hash, 2) as usize);
-        self.buckets.set(BloomFilter::get_segment_hash(full_hash, 3) as usize);
+        let seg_hash = BloomFilter::get_segment_hash;
+        self.buckets.set(seg_hash(full_hash, 0));
+        self.buckets.set(seg_hash(full_hash, 1));
+        self.buckets.set(seg_hash(full_hash, 2));
+        self.buckets.set(seg_hash(full_hash, 3));
     }
 
-    fn contains(&self, key: &str) -> bool {
+    pub fn contains(&self, key: &str) -> bool {
         let full_hash = BloomFilter::hash(key);
-        self.buckets.get(BloomFilter::get_segment_hash(full_hash, 0) as usize) &
-        self.buckets.get(BloomFilter::get_segment_hash(full_hash, 1) as usize) &
-        self.buckets.get(BloomFilter::get_segment_hash(full_hash, 2) as usize) &
-        self.buckets.get(BloomFilter::get_segment_hash(full_hash, 3) as usize)
+        let seg_hash = BloomFilter::get_segment_hash;
+        self.buckets.get(seg_hash(full_hash, 0)) &
+        self.buckets.get(seg_hash(full_hash, 1)) &
+        self.buckets.get(seg_hash(full_hash, 2)) &
+        self.buckets.get(seg_hash(full_hash, 3))
     }
 
-    fn clear(&mut self) {
+    pub fn clear(&mut self) {
         self.buckets.clear();
     }
 }

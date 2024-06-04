@@ -15,10 +15,7 @@ impl BitSet {
     }
 
     fn get_indices(index: usize) -> Indices {
-        Indices {
-            bucket: index / 64,
-            value: index % 64
-        }
+        Indices { bucket: index / 64, value: index % 64 }
     }
 
     fn get_bucket_mut(&mut self, index: usize) -> &mut u64 {
