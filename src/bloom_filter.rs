@@ -19,12 +19,14 @@ impl BloomFilter {
         ((full_hash >> (16 * index)) as u16) as usize
     }
 
+    /// Constructs a new BloomFilter.
     pub fn new() -> BloomFilter {
         BloomFilter {
             buckets: bitset::bitset::BitSet::new(u16::MAX as usize)
         }
     }
 
+    /// Adds a key to the filter.
     pub fn add(&mut self, key: &str) {
         let full_hash = BloomFilter::hash(key);
         let seg_hash = BloomFilter::get_segment_hash;
@@ -34,6 +36,7 @@ impl BloomFilter {
         self.buckets.set(seg_hash(full_hash, 3));
     }
 
+    /// Returns true if the filter contains the given key.
     pub fn contains(&self, key: &str) -> bool {
         let full_hash = BloomFilter::hash(key);
         let seg_hash = BloomFilter::get_segment_hash;
@@ -43,6 +46,7 @@ impl BloomFilter {
         self.buckets.get(seg_hash(full_hash, 3))
     }
 
+    /// Clears the filter.
     pub fn clear(&mut self) {
         self.buckets.clear();
     }

@@ -10,6 +10,7 @@ struct Indices {
 }
 
 impl BitSet {
+    /// Constructs a new BitSet with the given size.
     pub fn new(size: usize) -> BitSet {
         BitSet{ data: vec![0; size] }
     }
@@ -38,24 +39,25 @@ impl BitSet {
         *value |= !(1 << index)
     }
 
+    /// Sets the bit at the given index.
     pub fn set(&mut self, index: usize) {
         let indices = BitSet::get_indices(index);
-        let mut bucket = self.get_bucket_mut(indices.bucket);
-        BitSet::set_bit(&mut bucket, indices.value);
+        BitSet::set_bit(self.get_bucket_mut(indices.bucket), indices.value);
     }
 
+    /// Unsets the bit at the given index.
     pub fn unset(&mut self, index: usize) {
         let indices = BitSet::get_indices(index);
-        let mut bucket = self.get_bucket_mut(indices.bucket);
-        BitSet::unset_bit(&mut bucket, indices.value);
+        BitSet::unset_bit(self.get_bucket_mut(indices.bucket), indices.value);
     }
 
+    /// Returns the value of the bit at the given index.
     pub fn get(&self, index: usize) -> bool {
         let indices = BitSet::get_indices(index);
-        let bucket = self.get_bucket(indices.bucket);
-        BitSet::get_bit(bucket, indices.value)
+        BitSet::get_bit(self.get_bucket(indices.bucket), indices.value)
     }
 
+    /// Clears all bits in the BitSet.
     pub fn clear(&mut self) {
         self.data.fill(0);
     }
